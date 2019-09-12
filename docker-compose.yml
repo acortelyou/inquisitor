@@ -1,0 +1,84 @@
+version: "3"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:9
+    restart: unless-stopped
+    volumes:
+      - /opt/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  cachet:
+    container_name: cachet
+    image: cachethq/docker:latest
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - DB_DRIVER=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_PREFIX=chq_
+      - APP_KEY=${CACHET_KEY}
+      - APP_LOG=errorlog
+      - DEBUG=false
+      - VIRTUAL_PORT=8000
+      - VIRTUAL_HOST=${CACHET_DOMAIN}
+      - LETSENCRYPT_HOST=${CACHET_DOMAIN}
+  cachet-monitor:
+    container_name: cachet-monitor
+    image: veekee/cachet-monitor:latest
+    restart: unless-stopped
+    depends_on:
+      - cachet
+    volumes:
+      - /opt/cachet-monitor:/www/conf
+  nginx-proxy:
+    container_name: nginx-proxy
+    image: jwilder/nginx-proxy:latest
+    restart: unless-stopped
+    depends_on:
+      - cachet
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /opt/nginx/conf.d:/etc/nginx/conf.d
+      - /opt/nginx/vhost.d:/etc/nginx/vhost.d
+      - /opt/nginx/certs:/etc/nginx/certs
+      - /opt/nginx/dhparam:/etc/nginx/dhparam
+      - /opt/nginx/html:/usr/share/nginx/html
+  letsencrypt:
+    container_name: letsencrypt
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
+    restart: unless-stopped
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime
+      - /opt/nginx/vhost.d:/etc/nginx/vhost.d
+      - /opt/nginx/certs:/etc/nginx/certs
+      - /opt/nginx/dhparam:/etc/nginx/dhparam
+  ddclient:
+    container_name: ddclient
+    image: linuxserver/ddclient:latest
+    restart: unless-stopped
+    depends_on:
+      - letsencrypt
+    volumes:
+      - /opt/ddclient:/config
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    depends_on:
+      - ddclient
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
