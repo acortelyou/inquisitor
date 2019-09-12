@@ -6,7 +6,7 @@ services:
     image: postgres:9
     restart: unless-stopped
     volumes:
-      - /opt/postgres:/var/lib/postgresql/data
+      - ${VOLUME_ROOT}/postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -37,7 +37,7 @@ services:
     depends_on:
       - cachet
     volumes:
-      - /opt/cachet-monitor:/www/conf
+      - ${VOLUME_ROOT}/cachet-monitor:/www/conf
   nginx-proxy:
     container_name: nginx-proxy
     image: jwilder/nginx-proxy:latest
@@ -49,11 +49,11 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - /opt/nginx/conf.d:/etc/nginx/conf.d
-      - /opt/nginx/vhost.d:/etc/nginx/vhost.d
-      - /opt/nginx/certs:/etc/nginx/certs
-      - /opt/nginx/dhparam:/etc/nginx/dhparam
-      - /opt/nginx/html:/usr/share/nginx/html
+      - ${VOLUME_ROOT}/nginx/conf.d:/etc/nginx/conf.d
+      - ${VOLUME_ROOT}/nginx/vhost.d:/etc/nginx/vhost.d
+      - ${VOLUME_ROOT}/nginx/certs:/etc/nginx/certs
+      - ${VOLUME_ROOT}/nginx/dhparam:/etc/nginx/dhparam
+      - ${VOLUME_ROOT}/nginx/html:/usr/share/nginx/html
   letsencrypt:
     container_name: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion:latest
@@ -63,9 +63,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime
-      - /opt/nginx/vhost.d:/etc/nginx/vhost.d
-      - /opt/nginx/certs:/etc/nginx/certs
-      - /opt/nginx/dhparam:/etc/nginx/dhparam
+      - ${VOLUME_ROOT}/nginx/vhost.d:/etc/nginx/vhost.d
+      - ${VOLUME_ROOT}/nginx/certs:/etc/nginx/certs
+      - ${VOLUME_ROOT}/nginx/dhparam:/etc/nginx/dhparam
   ddclient:
     container_name: ddclient
     image: linuxserver/ddclient:latest
@@ -73,7 +73,7 @@ services:
     depends_on:
       - letsencrypt
     volumes:
-      - /opt/ddclient:/config
+      - ${VOLUME_ROOT}/ddclient:/config
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower:latest
