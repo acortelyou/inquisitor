@@ -4,7 +4,7 @@ services:
   postgres:
     container_name: postgres
     image: postgres:9
-    restart: unless-stopped
+    restart: always
     volumes:
       - ${VOLUME_ROOT}/postgres:/var/lib/postgresql/data
     environment:
@@ -14,7 +14,7 @@ services:
   cachet:
     container_name: cachet
     image: cachethq/docker:2.3.15
-    restart: unless-stopped
+    restart: always
     depends_on:
       - postgres
     environment:
@@ -34,7 +34,7 @@ services:
   cachet-monitor:
     container_name: cachet-monitor
     image: veekee/cachet-monitor:latest
-    restart: unless-stopped
+    restart: always
     depends_on:
       - cachet
     volumes:
@@ -47,7 +47,7 @@ services:
   nginx-proxy:
     container_name: nginx-proxy
     image: jwilder/nginx-proxy:latest
-    restart: unless-stopped
+    restart: always
     depends_on:
       - cachet
     ports:
@@ -65,7 +65,7 @@ services:
   letsencrypt:
     container_name: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion:latest
-    restart: unless-stopped
+    restart: always
     depends_on:
       - nginx-proxy
     volumes:
@@ -82,7 +82,7 @@ services:
   ddclient:
     container_name: ddclient
     image: linuxserver/ddclient:latest
-    restart: unless-stopped
+    restart: always
     depends_on:
       - letsencrypt
     volumes:
@@ -93,7 +93,7 @@ services:
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower:latest
-    restart: unless-stopped
+    restart: always
     depends_on:
       - ddclient
     volumes:
