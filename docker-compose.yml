@@ -13,7 +13,7 @@ services:
     user: ${PUID}:${PGID}
   cachet:
     container_name: cachet
-    image: cachethq/docker:2.3.15
+    image: cachethq/docker:latest
     restart: always
     depends_on:
       - postgres
