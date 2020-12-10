@@ -31,6 +31,7 @@ services:
       - VIRTUAL_PORT=8000
       - VIRTUAL_HOST=${CACHET_DOMAIN}
       - LETSENCRYPT_HOST=${CACHET_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
   cachet-monitor:
     container_name: cachet-monitor
     image: veekee/cachet-monitor:latest
