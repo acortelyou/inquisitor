@@ -65,7 +65,7 @@ services:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
   letsencrypt:
     container_name: letsencrypt
-    image: jrcs/letsencrypt-nginx-proxy-companion:latest
+    image: jrcs/letsencrypt-nginx-proxy-companion:v1.13.1
     restart: always
     depends_on:
       - nginx-proxy
