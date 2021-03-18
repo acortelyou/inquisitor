@@ -27,7 +27,7 @@ services:
       - DB_PREFIX=chq_
       - APP_KEY=${CACHET_KEY}
       - APP_LOG=errorlog
-      - DEBUG=false
+      - APP_DEBUG=false
       - VIRTUAL_PORT=8000
       - VIRTUAL_HOST=${CACHET_DOMAIN}
       - LETSENCRYPT_HOST=${CACHET_DOMAIN}
